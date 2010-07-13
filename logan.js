@@ -8,7 +8,7 @@ server.addListener('request', function (req, resp) {
       url = req.url.split('?')[0];
   if (url == '/') {
     resp.writeHead(200, {'Content-Type': 'text/html'});
-    text = fs.readFileSync('index.html', 'utf8').toString();
+    text = fs.readFileSync(__dirname + '/index.html', 'utf8').toString();
     text = text.replace('@@testfiles@@', "['geddy-model/tests/datatypes.js']");
     resp.end(text);
   }
@@ -35,5 +35,6 @@ server.addListener('request', function (req, resp) {
     resp.end('"' + url + '" Not found');
   }
 });
-server.listen(6666, '127.0.0.1');
+server.listen(3030, '127.0.0.1');
+sys.puts('Logan running on localhost port 3030');
 
