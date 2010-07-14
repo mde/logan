@@ -1,133 +1,15 @@
 <!DOCTYPE HTML>
 <html>
-  <script type="text/javascript" src="geddy-core/lib/fleegix.js"></script>
-  <script type="text/javascript" src="assert.js"></script>
   <script type="text/javascript">
     var global = window;
     var exports = {};
-
-    var logan = new function () {
-      this.files = [];
-      this.dirname = null;
-      this.filename = null;
-      
-      this.register = function (files) {
-        this.files = files;
-        var file;
-        while (file = this.files.shift()) {
-          this.loadTestFile(file);
-        }
-      };
-
-      this.loadTestFile = function (file) {
-        this.dirname = file.replace(/\/([^\/]+)\.js$/, '');
-        var content = this.getFile(file);
-        this.globalEval(file, content);
-      };
-      
-      this.getFile = function (path) {
-        var file = fleegix.xhr.send({
-          url: path
-          , async: false
-          , preventCache: true
-          , format: 'object'
-          , error: function (resp) {
-            throw new Error('Error loading ' + path);
-          }
-        });
-        return file.responseText;
-      };
-
-      this.globalEval = function (path, code) {
-        var win = window;
-        // Do we have a working eval?
-        if (typeof _brokenEval == 'undefined') {
-          window.eval.call(window, 'var __EVAL_TEST__ = true;');
-          if (typeof window.__EVAL_TEST__ != 'boolean') {
-            _brokenEval = true;
-          }
-          else {
-            _brokenEval = false;
-            delete window.__EVAL_TEST__;
-          }
-        }
-        // Try to eval the code
-        try {
-          if (_brokenEval) {
-            appendScriptTag(win, code);
-          }
-          else {
-            win.eval.call(win, code);
-          }
-        }
-        // Pass along syntax errors
-        catch (e) {
-          // If the browser stays open, throw
-          var err = new Error("Error in eval of code in file '" +
-            path + "' (" + e.message + ")");
-          err.name = e.name;
-          err.stack = e.stack;
-          throw err;
-        }
-      };
-
-      this.require = function (name, path) {
-        var calcPath = this.calcPath(path);
-        var file = calcPath + '.js';
-        var content = this.getFile(file);
-        this.globalEval(file, content);
-
-      };
-
-      this.calcPath = function (path) {
-        if (path.indexOf('../') == 0) {
-          var dirArr = this.dirname.split('/');
-          var pathArr = path.split('/');
-          var pathItem;
-          var calculated = [];
-          for (var i = 0, ii = pathArr.length; i < ii; i++) {
-            pathItem = pathArr[i];
-            if (pathItem == '..') {
-              dirArr.pop();
-            }
-            else {
-              calculated.push(pathItem);
-            }
-          }
-          calculated = dirArr.concat(calculated);
-          return calculated.join('/');
-        }
-        else if (path.indexOf('./') == 0) {
-          return this.dirname + path.replace(/^\./, '');
-        }
-        else {
-          return path;
-        }
-      };
-
-      this.run = function (namespace) {
-        for (var p in namespace) {
-          if (/^test/.test(p) && typeof namespace[p] == 'function') {
-            try {
-              namespace[p]();
-              this.report('Success: ' + p, true);
-            }
-            catch (e) {
-              //console.log(e);
-              var msg = e.message || '';
-              msg = msg ? '(' + msg + ')' : '';
-              this.report('Failure: ' + p + ' ' + msg); 
-            }
-          }
-        }
-      };
-
-      this.report = function (str, success) {
-        var cl = success ? 'success' : 'failure';
-        document.body.innerHTML += '<div class="' + cl + '">' + str + '</div>';
-      };
-
-    }();
+  </script>
+  <script type="text/javascript" src="logan.js"></script>
+  <script type="text/javascript" src="browser/adapter.js"></script>
+  <script type="text/javascript" src="deps/fleegix.js"></script>
+  <script type="text/javascript" src="deps/assert.js"></script>
+  <script type="text/javascript">
+    logan.adapter = new BrowserAdapter();
     window.onload = function () {
       logan.register(@@testfiles@@);
     };
@@ -139,7 +21,12 @@
     .failure {
       color: #c00;
     }
-  <style>
+    #header {
+      height: 14px;
+    }
+  </style>
   <body>
+    <h3 id="header"></h3>
+    <div id="results"></div>
   </body>
 </html>
