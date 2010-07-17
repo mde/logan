@@ -9,6 +9,7 @@ base_path = curr_path.sub('/racer', '')
 adapter_path = curr_path + '/adapter.js'
 logan_path = base_path + '/logan.js'
 assert_path = base_path + '/browser/deps/assert.js'
+json2_path = base_path + '/browser/deps/json2.js'
 
 #test_list = ['./geddy-model/tests/datatypes.js']
 
@@ -53,6 +54,7 @@ V8::Context.new do |cxt|
   cxt.eval(code)
   cxt.load(logan_path)
   cxt.load(assert_path)
+  cxt.load(json2_path)
   cxt.load(adapter_path)
 
   code = <<-eos
