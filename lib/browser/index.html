@@ -8,9 +8,9 @@
   <script type="text/javascript" src="deps/fleegix.js"></script>
   <script type="text/javascript" src="deps/assert.js"></script>
   <script type="text/javascript">
-    logan.adapter = new BrowserAdapter();
+    logan.adapter = new BrowserAdapter(logan);
     window.onload = function () {
-      logan.register(@@testfiles@@);
+      logan.adapter.register(@@testfiles@@);
     };
   </script>
   <style type="text/css">
