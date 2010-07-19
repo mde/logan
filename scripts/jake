@@ -17,5 +17,5 @@
 
 #!/bin/bash
 
-node ~/.node_libraries/node-jake/jake.js `pwd` $@
+node `pwd`/scripts/jake.js `pwd` $@
 
