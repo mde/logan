@@ -37,7 +37,7 @@ def calc_path(dirname, path)
     calculated = dir_arr + calculated
     return calculated.join('/')
   elsif path.index('./') == 0
-    return dirname + path.replace(/^\./, '')
+    return dirname + path.gsub(/^\./, '')
   else
     return path
   end
